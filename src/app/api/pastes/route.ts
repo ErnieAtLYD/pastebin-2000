@@ -24,14 +24,23 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const limit = parseInt(searchParams.get('limit') || '10')
-  const pastes = await getRecentPastes(limit)
+  try {
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '10')
+    
+    const pastes = await getRecentPastes(limit)
 
-  if (pastes.length === 0) {
-    return NextResponse.json(null, { status: 204 })
+    if (pastes.length === 0) {
+      return NextResponse.json([])
+    }
+
+    return NextResponse.json(pastes)
+  } catch (error) {
+    console.error('Error fetching pastes:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch pastes' },
+      { status: 500 }
+    )
   }
-
-  return NextResponse.json(pastes)
 }
 
