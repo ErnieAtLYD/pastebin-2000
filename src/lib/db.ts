@@ -1,6 +1,11 @@
 import { kv } from "@vercel/kv";
 import { Paste } from "@/types/paste";
 
+interface DbUser {
+  username: string;
+  password: string;
+}
+
 export { kv };
 
 // Helper functions for common operations
@@ -58,6 +63,6 @@ export async function createUser(username: string, hashedPassword: string) {
   });
 }
 
-export async function getUser(username: string) {
-  return kv.hgetall(`user:${username}`);
+export async function getUser(username: string): Promise<DbUser | null> {
+  return kv.hgetall(`user:${username}`) as Promise<DbUser | null>;
 }
