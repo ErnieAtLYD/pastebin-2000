@@ -1,0 +1,46 @@
+import { NextResponse } from 'next/server'
+import { createPaste, getRecentPastes } from '@/lib/db'
+import crypto from 'crypto'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+
+export async function POST(request: Request) {
+  const { content, expiresIn, isPrivate } = await request.json()
+  if (!content) {
+    return NextResponse.json({ error: 'Content is required' }, { status: 400 })
+  }
+
+  const id = crypto.randomBytes(4).toString('hex')
+  const session = await getServerSession(authOptions)
+  const userId = session?.user?.id ?? null
+
+  let expiresAt = null
+  if (expiresIn) {
+    expiresAt = new Date(Date.now() + parseInt(expiresIn) * 1000).toISOString()
+  }
+  await createPaste(id, content, expiresAt, userId, isPrivate)
+
+  return NextResponse.json({ id })
+}
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '10')
+    
+    const pastes = await getRecentPastes(limit)
+
+    if (pastes.length === 0) {
+      return NextResponse.json([])
+    }
+
+    return NextResponse.json(pastes)
+  } catch (error) {
+    console.error('Error fetching pastes:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch pastes' },
+      { status: 500 }
+    )
+  }
+}
+
