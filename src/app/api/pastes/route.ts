@@ -28,6 +28,10 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get('limit') || '10')
   const pastes = await getRecentPastes(limit)
 
+  if (pastes.length === 0) {
+    return NextResponse.json(null, { status: 204 })
+  }
+
   return NextResponse.json(pastes)
 }
 
