@@ -1,5 +1,5 @@
 import PasteForm from '@/components/PasteForm'
-import RecentPastes from '@/components/RecentPastes'
+import { RecentPastes} from '@/components/RecentPastes'
 
 export default function Home() {
   return (

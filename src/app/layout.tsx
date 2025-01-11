@@ -1,7 +1,7 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import { SessionProvider } from 'next-auth/react'
-import Link from 'next/link'
+import { NavBar } from '@/components/NavBar'
+import { Providers } from '@/components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,23 +16,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-lt-installed="true">
       <body className={inter.className}>
-        <SessionProvider>
-          <nav className="bg-gray-100 p-4">
-            <div className="container mx-auto flex justify-between items-center">
-              <Link href="/" className="text-xl font-bold">Pastebin Clone</Link>
-              <div className="space-x-4">
-                <Link href="/login" className="hover:underline">Login</Link>
-                <Link href="/register" className="hover:underline">Register</Link>
-                {/* Add logout functionality */}
-              </div>
-            </div>
-          </nav>
+        <Providers>
+          <NavBar />
           <main className="min-h-screen bg-white">
             {children}
           </main>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   )
